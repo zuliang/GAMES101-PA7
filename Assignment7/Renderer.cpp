@@ -6,7 +6,6 @@
 #include "Scene.hpp"
 #include "Renderer.hpp"
 #include <future>
-#include "SharedQueue.h"
 #include <memory>
 #include <queue>
 #include <mutex>
