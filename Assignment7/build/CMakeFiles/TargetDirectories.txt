@@ -1,3 +1,0 @@
-E:/workspace/games101/PA7Sync/Assignment7/build/CMakeFiles/RayTracing.dir
-E:/workspace/games101/PA7Sync/Assignment7/build/CMakeFiles/ALL_BUILD.dir
-E:/workspace/games101/PA7Sync/Assignment7/build/CMakeFiles/ZERO_CHECK.dir
