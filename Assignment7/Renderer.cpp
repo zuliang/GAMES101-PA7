@@ -5,11 +5,17 @@
 #include <fstream>
 #include "Scene.hpp"
 #include "Renderer.hpp"
-
+#include <future>
+#include "SharedQueue.h"
+#include <memory>
+#include <queue>
+#include <mutex>
 
 inline float deg2rad(const float& deg) { return deg * M_PI / 180.0; }
 
 const float EPSILON = 0.00001;
+
+static std::mutex FRAMEBUFFER_MUTEX;
 
 // The main render function. This where we iterate over all pixels in the image,
 // generate primary rays and cast these rays into the scene. The content of the
@@ -22,10 +28,12 @@ void Renderer::Render(const Scene& scene)
     float imageAspectRatio = scene.width / (float)scene.height;
     Vector3f eye_pos(278, 273, -800);
     int m = 0;
-
+   
+    std::future<void> ta = std::async(std::launch::async, [] {int a = 1; });
     // change the spp value to change sample ammount
     int spp = 16;
     std::cout << "SPP: " << spp << "\n";
+    std::queue<std::future<void>> TaskQueue;
     for (uint32_t j = 0; j < scene.height; ++j) {
         for (uint32_t i = 0; i < scene.width; ++i) {
             // generate primary ray direction
@@ -35,11 +43,25 @@ void Renderer::Render(const Scene& scene)
 
             Vector3f dir = normalize(Vector3f(-x, y, 1));
             for (int k = 0; k < spp; k++){
-                framebuffer[m] += scene.castRay(Ray(eye_pos, dir), 0) / spp;  
+                // Async cal casting
+                Ray ray(eye_pos, dir);
+                std::future<void> ta = std::async(std::launch::async, [&framebuffer, &scene, ray, spp, m, k]()
+                {
+                    const auto& Res = scene.castRay(ray, 0) / spp;
+                    std::unique_lock<std::mutex> Lock(FRAMEBUFFER_MUTEX);
+                    framebuffer[m] += Res;
+                });
+                TaskQueue.emplace(std::move(ta));
             }
             m++;
         }
         UpdateProgress(j / (float)scene.height);
+    }
+    while (!TaskQueue.empty())
+    {
+        auto& ta = TaskQueue.front();
+        ta.wait();
+        TaskQueue.pop();
     }
     UpdateProgress(1.f);
 
