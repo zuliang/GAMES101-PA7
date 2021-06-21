@@ -20,6 +20,7 @@
 ## Path Tracing
 
 ![Render Equation](imgs/RenderEquation.png)
+![](imgs/MonteCarlo.png)
 ![Sample Light](imgs/SampleLight1.png)
 ![Sample Light](imgs/SampleLight.png)
 
@@ -110,7 +111,7 @@ Vector3f Scene::castRay(const Ray& ray, int depth) const
 ![Multi Cores](imgs/multiCore.png)
 | 16spp 500x500 single core | 16spp 500x500 8 cores 16 threads |
 |---|---|
-| 661s |  146s |
+| 117s |  146s |
 
 ## Real Time Ray Tracing Model
 ![](imgs/RTX.png)
