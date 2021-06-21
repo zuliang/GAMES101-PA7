@@ -20,8 +20,8 @@
 ## Path Tracing
 
 ![Render Equation](imgs/RenderEquation.png)
-![](imgs/MonteCarlo.png)
 ![Sample Light](imgs/SampleLight1.png)
+![](imgs/MonteCarlo.png)
 ![Sample Light](imgs/SampleLight.png)
 
 ### CPP Implementation
@@ -104,6 +104,10 @@ Vector3f Scene::castRay(const Ray& ray, int depth) const
     }
 ```
 
+## 16spp Result
+![](imgs/noisy_cornellbox.png)
+
+
 ## Path Tracing CPU Performance
 * 16spp 500x500 single core
 ![Single Core](imgs/singleCore.png)
@@ -111,7 +115,7 @@ Vector3f Scene::castRay(const Ray& ray, int depth) const
 ![Multi Cores](imgs/multiCore.png)
 | 16spp 500x500 single core | 16spp 500x500 8 cores 16 threads |
 |---|---|
-| 117s |  146s |
+| 117s | 18s |
 
 ## Real Time Ray Tracing Model
 ![](imgs/RTX.png)
@@ -122,6 +126,9 @@ Vector3f Scene::castRay(const Ray& ray, int depth) const
 ![RTRT](imgs/RTRTModel.png)
 
 [RTRT Ref.](https://www.willusher.io/graphics/2019/11/20/the-sbt-three-ways)
+
+## RTRT Result
+![](imgs/cornellbox.png)
 
 [RTRT Demo By Optix](cornell_box.mp4)
 
