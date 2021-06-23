@@ -1,4 +1,4 @@
-# Real Time Ray Tracing
+# Path Tracing
 
 ## Recap Whitted-Style Ray Tracing
 
@@ -20,8 +20,9 @@
 ## Path Tracing
 
 ![Render Equation](imgs/RenderEquation.png)
-![Sample Light](imgs/SampleLight1.png)
 ![](imgs/MonteCarlo.png)
+![](imgs/MonteCarloSolution.png)
+![Sample Light](imgs/SampleLight1.png)
 ![Sample Light](imgs/SampleLight.png)
 
 ### CPP Implementation
@@ -262,7 +263,7 @@ extern "C" __global__ void __closesthit__radiance()
     else
         prd->emitted = make_float3( 0.0f );
 
-
+	// random seed
     unsigned int seed = prd->seed;
 
     {
@@ -270,8 +271,11 @@ extern "C" __global__ void __closesthit__radiance()
         const float z2 = rnd(seed);
 
         float3 w_in;
+        // get a random ray in this intersect 随机入射方向
         cosine_sample_hemisphere( z1, z2, w_in );
+        // calculate binormal and tangent
         Onb onb( N );
+        // convert to world transform
         onb.inverse_transform( w_in );
         prd->direction = w_in;
         prd->origin    = P;
@@ -285,12 +289,17 @@ extern "C" __global__ void __closesthit__radiance()
     prd->seed = seed;
 
     ParallelogramLight light = params.light;
+    // light.corner 光源的世界坐标 light.v1 光源的u向量，light.v2光源的v向量
     const float3 light_pos = light.corner + light.v1 * z1 + light.v2 * z2;
 
     // Calculate properties of light sample (for area based pdf)
+    // distance between light and intersect
     const float  Ldist = length(light_pos - P );
+    // light in dir
     const float3 L     = normalize(light_pos - P );
+    // theta cos θ
     const float  nDl   = dot( N, L );
+    // theta prime cos θ’
     const float  LnDl  = -dot( light.normal, L );
 
     float weight = 0.0f;
@@ -307,6 +316,7 @@ extern "C" __global__ void __closesthit__radiance()
         if( !occluded )
         {
             const float A = length(cross(light.v1, light.v2));
+            // L_dir = L_i * f_r * cos θ * cos θ’ / |x’ - p|^2 / pdf_light
             weight = nDl * LnDl * A / (M_PIf * Ldist * Ldist);
         }
     }
